@@ -10,7 +10,7 @@ from agroutils.session.interfaces import DBInterface
 from eventtracker.utils.config import get_config_object
 from eventtracker.service_apis.help import help_api
 
-from eventtracker.service_apis.template import Template
+from eventtracker.service_apis.system_event import SystemEvent
 
 app = Flask('Event Tracker')
 
@@ -26,7 +26,7 @@ app.session_interface = DBInterface()
 app.register_blueprint(help_api)
 
 event_api_v1 = Api(app, prefix='/eventtracker/v1')
-event_api_v1.add_resource(Template, '/template/<string:template_id>/', '/template/')
+event_api_v1.add_resource(SystemEvent, '/systemevents/')
 
 if __name__ == '__main__':
     app.logger.info("app {} started..".format(app))
