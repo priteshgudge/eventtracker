@@ -31,7 +31,7 @@ def create_temp_database():
     except:
         print "Exception while dropping database"
     db = client.system_events_test
-    #create_collection_indexes(db)
+    create_collection_indexes(db)
     return db
 
 def generate_sms_random():
