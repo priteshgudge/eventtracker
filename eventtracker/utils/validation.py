@@ -18,7 +18,7 @@ event_name_set = set(['order_create_sms','order_edit_sms','order_cancel_sms',
 
 
 def validate_timestamp(timestamp):
-    if not isinstance(timestamp, int):
+    if not isinstance(timestamp, int) or not isinstance(timestamp, long):
         raise AgroError(400, "Invalid Timestamp")
 
     if not isinstance(timestamp,list):
