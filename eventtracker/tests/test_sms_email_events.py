@@ -9,11 +9,11 @@ import uuid
 from loremipsum import generate_paragraph
 from eventtracker.utils.validation import validate_system_event_request
 import time
-entity_type_set = set(['order','ticket','farmer','product'])
-event_type_set = set(['sms','email'])
-event_name_set = set(['order_create_sms','order_edit_sms','order_cancel_sms',
-                        'order_create_email','order_edit_email','order_cancel_email'
-                       'ticket_create_sms','ticket_close_sms','ticket_status_change_sms'])
+entity_type_set = set({'order','ticket','farmer','product'})
+event_type_set = set({'sms','email'})
+event_name_set = set({'order_create_sms','order_edit_sms','order_cancel_sms',
+                        'order_create_email','order_edit_email','order_cancel_email',
+                       'ticket_create_sms','ticket_close_sms','ticket_status_change_sms'})
 
 
 client_url = "mongodb://localhost:17017/"
@@ -22,8 +22,8 @@ client = None
 epoch = dt.utcfromtimestamp(0)
 
 def unix_time_millis(dt):
-    return int((dt - epoch).total_seconds() * 1000)
-
+    #return int((dt - epoch).total_seconds() * 1000)
+    return int(dt.strftime("%s")) * 1000
 def create_temp_database():
     #client = MongoClient('localhost', 17017)
     try:
@@ -38,9 +38,9 @@ def generate_sms_random():
     timestamp = unix_time_millis(dt.now())
     event_type = random.choice(list(event_type_set))
     entity_type = random.choice(list(entity_type_set))
-    entity_id = random.randint(a=10000, b=99999)
+    entity_id = str(random.randint(a=10000, b=99999))
     event_name_list = filter(lambda x: event_type in x and entity_type in x,event_name_set)
-    farmer_id = random.randint(10001,10003)
+    farmer_id = str(random.randint(10001,10003))
 
     if event_name_list:
         event_name = random.choice(event_name_list)
@@ -60,7 +60,7 @@ def insert_sms_event(db, event_dict):
     result = db.events.insert_one(event_dict)
     #print result, event_dict
 
-def generate_multiple_events(num=10000):
+def generate_multiple_events(num=100):
     event_list = []
     for i in range(num):
         event =   generate_sms_random()
@@ -143,5 +143,5 @@ def write_func():
 if __name__ == '__main__':
     global client
     client = pymongo.MongoClient(client_url, maxPoolSize=100)
-    #write_func()
-    read_func()
+    write_func()
+    #read_func()

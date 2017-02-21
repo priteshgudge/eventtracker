@@ -10,15 +10,15 @@ class DocumentError(Exception):
     pass
 
 
-entity_type_set = set(['order','ticket','farmer','product'])
-event_type_set = set(['sms','email'])
-event_name_set = set(['order_create_sms','order_edit_sms','order_cancel_sms',
-                        'order_create_email','order_edit_email','order_cancel_email'
-                       'ticket_create_sms','ticket_close_sms','ticket_status_change_sms'])
+entity_type_set = set({'order','ticket','farmer','product'})
+event_type_set = set({'sms','email'})
+event_name_set = set({'order_create_sms','order_edit_sms','order_cancel_sms',
+                        'order_create_email','order_edit_email','order_cancel_email',
+                       'ticket_create_sms','ticket_close_sms','ticket_status_change_sms'})
 
 
 def validate_timestamp(timestamp):
-    if not isinstance(timestamp, int) or not isinstance(timestamp, long):
+    if not (isinstance(timestamp, int) or isinstance(timestamp, long)):
         raise AgroError(400, "Invalid Timestamp")
 
     if not isinstance(timestamp,list):

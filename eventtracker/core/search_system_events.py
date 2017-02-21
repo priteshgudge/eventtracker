@@ -33,6 +33,7 @@ def search_system_events(**kwargs):
     #client_url = app.config.get('MONGO_DB_URI', "mongodb://localhost:17017/")
     # FOR TEST
     client = kwargs.get('client')
+    client = app.db_client
     if not client:
         client_url = "mongodb://localhost:17017/"
         client = pymongo.MongoClient(client_url)
@@ -108,7 +109,12 @@ def search_system_events(**kwargs):
     else:
         cursor = cursor.sort(sort_by)
 
-    total = cursor.count()
+    if 'offset' in kwargs.keys():
+        cursor = cursor.skip(kwargs['offset'])
+    if 'limit' in kwargs.keys():
+        cursor = cursor.limit(kwargs['limit'])
+    print query, projection
+    total = cursor.count(with_limit_and_skip=True)
 
     event_list = []
 

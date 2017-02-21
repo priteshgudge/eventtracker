@@ -22,18 +22,37 @@ def generate_searchDict(params):
         search_dict['ticketId'] = params['ticketId']
     return search_dict
 
-def get_system_events_list(params):
+
+full_projection = ['entityType', 'entityId', 'timestamp',
+                   'eventType', 'eventName', 'farmerId',
+                   'ticketId', 'orderId']
 
 
-    validate_get_system_events(params)
+def get_system_events_list(params, details, offset, limit):
+
+    #validate_get_system_events(params)
+
+    params['offset'] = offset
+    params['limit'] = limit
+    if not details:
+        params['projection'] = full_projection
 
     params.update({'searchDict':generate_searchDict(params)})
+
     events_list = search_system_events(**params)
+
     return events_list
 
 def get_events(params):
 
-    events_list = get_system_events_list(params)
+    try:
+        details = True if params.get('details','false') == 'true' else False
+        offset = int(params.get('offset', 0))
+        limit = int(params.get('limit', 10))
+    except:
+        raise AgroError(400, "Invalid Request")
+
+    events_list = get_system_events_list(params, details, offset, limit)
 
     return events_list
 
