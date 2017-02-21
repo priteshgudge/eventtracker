@@ -20,7 +20,7 @@ class SystemEvent(AgroutilResource):
         app.logger.info("GET {}".format(self.__class__.__name__))
         params = request.args.to_dict()
 
-        response = None
+        response = get_events(params)
 
         return ok_response(response)
 

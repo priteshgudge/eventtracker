@@ -17,16 +17,17 @@ def search_system_events(**kwargs):
     """
     :param kwargs:
     include: ids to include in response
-    entity_type : type of object notification was sent for ['order','farmer','ticket','product']
-    entity_id: name : entity id of object notification was sent on
-    event_type: type of notification : [sms,email]
-    event_name: name of events: [order_edit_sms etc]
-    search_keys_dict: optional key,values {farmerId, orderId, ticketId}
+    entityType : type of object notification was sent for ['order','farmer','ticket','product']
+    entityId: name : entity id of object notification was sent on
+    eventType: type of notification : [sms,email]
+    eventName: name of events: [order_edit_sms etc]
+    searchDict: optional key,values {farmerId, orderId, ticketId}
     timestamp: (ts1): from timestamp, (ts1,ts2) To timestamp
+    sortBy: list of tuples {default: timestamp: Descending}  else sort([("field1",pymongo.ASCENDING), ("field2",pymongo.DESCENDING)])
     exclude: ids to exclude from search
     projection: dict of projection
     transform : bson to json encoding
-    :return:list of articles
+    :return:list of events
     """
     #config = get_config_object()
     #client_url = app.config.get('MONGO_DB_URI', "mongodb://localhost:17017/")
@@ -89,6 +90,8 @@ def search_system_events(**kwargs):
     else:
         tquery = { 'timestamp': {'$gte': timestamp}}
 
+    #query.update(tquery)
+
     search_keys_dict = kwargs.get('searchDict')
     if search_keys_dict:
         query.update(search_keys_dict)
@@ -98,15 +101,24 @@ def search_system_events(**kwargs):
     else:
         cursor = cursor.find(query)
 
+    sort_by = kwargs.get('sortBy')
+    if not sort_by:
+        cursor = cursor.sort('timestamp',pymongo.DESCENDING)
+    else:
+        cursor = cursor.sort(sort_by)
+
     total = cursor.count()
 
     event_list = []
 
-    for event in cursor:
-        if transform:
-            transformed = transform_event(event)
-            event_list.append(transformed)
-
+    #for event in cursor:
+    #    if transform:
+    #        transformed = transform_event(event)
+    #        event_list.append(transformed)
+    if transform:
+        event_list = [transform_event(event) for event in cursor]
+    else:
+        event_list = [event for event in cursor]
     return event_list
 
 def transform_event(template):

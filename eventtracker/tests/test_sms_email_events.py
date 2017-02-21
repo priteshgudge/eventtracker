@@ -31,14 +31,14 @@ def create_temp_database():
     except:
         print "Exception while dropping database"
     db = client.system_events_test
-    create_collection_indexes(db)
+    #create_collection_indexes(db)
     return db
 
 def generate_sms_random():
     timestamp = unix_time_millis(dt.now())
     event_type = random.choice(list(event_type_set))
     entity_type = random.choice(list(entity_type_set))
-    entity_id = random.randint(a=10000, b=999999999999999)
+    entity_id = random.randint(a=10000, b=99999)
     event_name_list = filter(lambda x: event_type in x and entity_type in x,event_name_set)
     farmer_id = random.randint(10001,10003)
 
@@ -72,12 +72,13 @@ def insert_multiple_sms(db, event_list):
         insert_sms_event(db,ev)
 
 def get_test_db():
-    #client = MongoClient('localhost', 17017)
+    client = MongoClient('localhost', 17017)
 
     db = client.system_events_test
     return db
 
 def read_func():
+    global client
     time1 = time.time()
     #    insert_multiple_sms(db, ev_list)
     time2 = time.time()
@@ -126,9 +127,10 @@ def read_func():
 
 
 def write_func():
+    global client
     client = pymongo.MongoClient(client_url, maxPoolSize=100)
     db = create_temp_database()
-
+    #db = get_test_db()
     random.seed(101)
     ev_list = generate_multiple_events(num=100000)
 
@@ -139,6 +141,7 @@ def write_func():
 
 
 if __name__ == '__main__':
+    global client
     client = pymongo.MongoClient(client_url, maxPoolSize=100)
     #write_func()
     read_func()

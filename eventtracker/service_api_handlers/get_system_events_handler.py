@@ -12,10 +12,10 @@ logger = logging.getLogger('main')
 
 
 def get_system_events_list(params):
-    kwargs = {}
+
 
     validate_get_system_events(params)
-    events_list = search_system_events(kwargs)
+    events_list = search_system_events(params)
     return events_list
 
 def get_events(params):
