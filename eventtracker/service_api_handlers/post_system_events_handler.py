@@ -25,11 +25,11 @@ def get_system_event_collection_cursor():
         # FOR TEST
         # client_url = "mongodb://localhost:17017/"
         client = pymongo.MongoClient(client_url)
-        db = client.event_tracker
-        cursor = db.system_events
+        db = client.system_events_test
+        cursor = db.events
     except:
         logger.error("Error while connecting to MONGODB" + traceback.format_exc())
-
+        raise AgroError(500, "Error connecting to DB")
     return cursor
 
 def insert_system_event(event_json):

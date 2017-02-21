@@ -18,6 +18,9 @@ event_name_set = set(['order_create_sms','order_edit_sms','order_cancel_sms',
 
 
 def validate_timestamp(timestamp):
+    if not isinstance(timestamp, int):
+        raise AgroError(400, "Invalid Timestamp")
+
     if not isinstance(timestamp,list):
         timestamp_list = [timestamp]
     else:
@@ -64,7 +67,8 @@ def validate_system_event(event_json):
     validate_entity_type(entity_type)
     validate_event_type(event_type)
     validate_event_name(event_name)
-
+    validate_timestamp(timestamp)
+    validate_additional_keys(event_json)
 
 def validate_system_event_list(event_list):
     if not isinstance(event_list,list):
@@ -84,6 +88,37 @@ def validate_system_event_request(request_details):
     else:
         raise AgroError(400, "Bad Request. Need event/events in request")
 
+def validate_additional_keys(request_details):
+    if 'farmerId' in request_details.keys():
+        if not isinstance(request_details['farmerId'], basestring):
+            raise AgroError(400, "Invalid Farmer Id")
+
+    if 'orderId' in request_details.keys():
+        if not isinstance(request_details['orderId'], basestring):
+            raise AgroError(400, "Invalid Order Id")
+
+    if 'ticketId' in request_details.keys():
+        if not isinstance(request_details['ticketId'], basestring):
+            raise AgroError(400, "Invalid Ticket Id")
+
+def check_search_keys(request_details):
+    valid = False
+    if 'farmerId' in request_details.keys():
+        if not isinstance(request_details['farmerId'], basestring):
+            return False
+        valid = True
+    if 'orderId' in request_details.keys():
+        if not isinstance(request_details['orderId'], basestring):
+            return False
+        valid =  True
+
+    if 'ticketId' in request_details.keys():
+        if not isinstance(request_details['ticketId'], basestring):
+            return False
+        valid =  True
+
+    return valid
+
 def validate_get_system_events(request_details):
 
     valid = False
@@ -97,8 +132,9 @@ def validate_get_system_events(request_details):
             validate_event_type(event_type)
         valid = True
 
+
     if 'entityType' in request_details:
-        validate_entity_type(['entityType'])
+        validate_entity_type(request_details['entityType'])
         if 'entityId' not in request_details:
             raise AgroError(400, "Enitity Ids are required")
         valid = True
@@ -106,7 +142,7 @@ def validate_get_system_events(request_details):
     if 'timestamp' in request_details:
         validate_timestamp(request_details['timestamp'])
 
-    if not valid and ['orderId','ticketId','farmerId'] not in request_details:
+    if not valid and not check_search_keys(request_details):
         raise AgroError(400, "Invalid Request")
 
     return True

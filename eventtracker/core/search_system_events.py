@@ -85,12 +85,13 @@ def search_system_events(**kwargs):
 
     # Filter According to timestamp
     timestamp = kwargs.get('timestamp')
-    if isinstance(timestamp,tuple):
-        tquery = {'timestamp': {'$gte': timestamp[0], '$lte': timestamp[1]}}
-    else:
-        tquery = { 'timestamp': {'$gte': timestamp}}
+    if timestamp:
+        if isinstance(timestamp,tuple):
+            tquery = {'timestamp': {'$gte': timestamp[0], '$lte': timestamp[1]}}
+        else:
+            tquery = { 'timestamp': {'$gte': timestamp}}
 
-    #query.update(tquery)
+        query.update(tquery)
 
     search_keys_dict = kwargs.get('searchDict')
     if search_keys_dict:
